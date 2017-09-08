@@ -1,0 +1,28 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="local-config.html">
+<dom-module id="musiclife-config">
+    <script>
+    class MusiclifeConfig extends Polymer.mixinBehaviors([LocalConfig], Polymer.Element) {
+      static get is() { return 'musiclife-config'; }  
+      static get properties() {
+          return {
+              musiclife_api_signup: {
+                type: String,
+                computed: 'processPath(musiclife_api_url, "/api/signup/")'
+              },
+              musiclife_api_music_list:{
+                type: String,
+                computed: 'processPath(musiclife_api_url, "/api/music/list")'
+              },
+              musiclife_api_signin:{
+                type: String,
+                computed: 'processPath(musiclife_api_url, "/api/login/")'
+              }
+          }
+      }
+    }
+
+    window.customElements.define(MusiclifeConfig.is, MusiclifeConfig);
+    </script>
+
+</dom-module>

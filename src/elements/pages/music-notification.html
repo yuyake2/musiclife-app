@@ -1,0 +1,75 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../shared-styles.html">
+<link rel="import" href="../components/music-sectitle.html">
+<link rel="import" href="../components/music-underline.html">
+
+
+<dom-module id="music-notification">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+        padding: 10px;
+      }
+
+      .circle{
+        float:left;
+      }
+      .text{
+          float: left;
+          padding: 14px 14px;
+      }
+
+    </style>
+    
+    <style include="iron-flex iron-flex-alignment iron-flex-factors"></style>
+
+
+    <div class="container">
+      <div class="layout horizontal wrap music-layout">
+          <div class="flex">
+              <music-sectitle>notification list</music-sectitle>
+          </div>
+      </div>
+
+      <div class="layout horizontal wrap music-layout">
+          <div class="flex">
+              <div class="circle"></div>
+              <div class="text">
+                <strong class="text-ilatic">Aom</strong> like your music !
+              </div>
+          </div>
+      </div>
+
+      <div class="layout horizontal wrap music-layout">
+          <div class="flex">
+              <div class="circle"></div>
+              <div class="text">
+                <strong class="text-ilatic">Donut</strong> like your music !
+              </div>
+          </div>
+      </div>
+      
+      
+      
+    </div>
+  </template>
+
+  <script>
+    class MusicNotification extends Polymer.Element {
+      static get is() { return 'music-notification'; }
+    }
+
+    window.customElements.define(MusicNotification.is, MusicNotification);
+  </script>
+</dom-module>

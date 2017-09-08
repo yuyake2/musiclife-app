@@ -1,0 +1,113 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../shared-styles.html">
+
+
+<dom-module id="music-login">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+        padding: 10px;
+      }
+      .fb-login-button{
+          -moz-user-select: none;
+            background: #2A49A5;
+            border: 1px solid #082783;
+            box-shadow: 0 1px #4C6BC7 inset;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            text-shadow: 0 -1px 0 #082783;
+            font: 12px Verdana, sans-serif;
+      }
+    </style>
+    
+    <style include="iron-flex iron-flex-alignment iron-flex-factors"></style>
+
+     <content>
+       <paper-button class="fb-login-button" on-tap="facebookLogin">facebook</paper-button>
+     </content>   
+
+  </template>
+  
+  <script>
+    class MusicLogin extends Polymer.Element {
+      static get is() { return 'music-login'; }    
+
+      static get properties() {
+        return {
+           userData: { 
+               type: Object,
+               notify: true
+           },
+           routeData: { type: Object },
+           facebookAuth: {
+              type: Object
+           }
+        }
+      }
+
+      facebookLogin(){
+          var facebookItem = this;
+          FB.login(function(response){
+            // Handle the response object, like in statusChangeCallback() in our demo
+            // code.
+            console.log(response);
+            if (response.status === 'connected') {
+              // Logged into your app and Facebook.
+              facebookItem.facebookLoginAPI();
+            }
+          }, {scope: 'public_profile,email'});
+
+      }
+
+     facebookLoginAPI() {
+        console.log('Welcome!  Fetching your information.... ');
+        var itemEle = this;
+        FB.api('/me?fields=id,name,picture.width(200).height(200)', function(response) { //
+          console.log('Successful login for: ' +response.name);
+          itemEle.userData = { "name": response.name , 
+                               "id": response.id ,
+                               "picture": response.picture.data.url 
+                             }
+        });
+        return itemEle.userData;
+      }
+    }
+
+    window.customElements.define(MusicLogin.is, MusicLogin);
+
+    function facebookInit() {
+        window.fbAsyncInit = function() {
+            FB.init({
+            appId      : '333833767043393',
+            xfbml      : true,
+            version    : 'v2.10'
+            });
+            FB.AppEvents.logPageView();
+        };
+
+        (function(d, s, id){
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {return;}
+            js = d.createElement(s); js.id = id;
+            js.src = "//connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));     
+    }
+
+      
+      facebookInit();
+  </script>
+</dom-module>

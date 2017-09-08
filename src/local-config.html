@@ -1,0 +1,20 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<dom-module id="local-config">
+    <script>
+        LocalConfig = {
+            properties: {
+                musiclife_api_url: {
+                    type: String,
+                    value: 'http://musiclifeapi-local.com:8000'
+                },
+                musiclife_cms_url: {
+                    type: String,
+                    value: 'http://musiclife-local.com:8080'
+                }
+            },
+            processPath: function (url, path) {
+                return url + path;
+            }
+        };
+    </script>
+</dom-module>

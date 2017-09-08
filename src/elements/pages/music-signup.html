@@ -1,0 +1,154 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../shared-styles.html">
+<link rel="import" href="../../musiclife-config.html">
+<link rel="import" href="../../elements/pages/user-service.html">
+
+
+<dom-module id="music-signup">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+        padding: 10px;
+      }
+      .fb-login-button{
+          -moz-user-select: none;
+            background: #2A49A5;
+            border: 1px solid #082783;
+            box-shadow: 0 1px #4C6BC7 inset;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            text-shadow: 0 -1px 0 #082783;
+            font: 12px Verdana, sans-serif;
+      }
+    </style>
+    
+    <style include="iron-flex iron-flex-alignment iron-flex-factors"></style>
+     <musiclife-config id="config"></musiclife-config>
+     <user-service id="userService" auth-data="{{authData}}" route-data="[[ routeData ]]"></user-service>
+    
+
+     <iron-ajax id="signup_iron_ajax" auto handle-as="json" method="post"
+               with-credentials="true" debounce-duration="300"
+               on-response="handleSignupResponse"></iron-ajax>
+     <content>
+       <paper-button class="fb-login-button" on-tap="facebookSignup">facebook</paper-button>
+     </content>   
+
+  </template>
+  
+  <script>
+    function readCookie(name) {
+          var nameEQ = name + "=";
+          var ca = document.cookie.split(';');
+          for (var i = 0; i < ca.length; i++) {
+              var c = ca[i];
+              while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+              if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+          }
+          return null;
+    }
+      
+    class MusicSignup extends Polymer.Element {
+      static get is() { return 'music-signup'; }    
+
+      static get properties() {
+        return {
+           userData: { 
+               type: Object
+           },
+           routeData: { type: Object },
+           authData: {
+              type: Object,
+              notify: true
+           }
+        }
+      }
+
+      facebookSignup(){
+          var facebookItem = this;
+          FB.login(function(response){
+            // Handle the response object, like in statusChangeCallback() in our demo
+            // code.
+            console.log(response);
+            var fb_token = response.authResponse.accessToken;
+            if (response.status === 'connected') {
+              // Logged into your app and Facebook.
+              facebookItem.facebookSignupAPI(fb_token);
+            }
+          }, {scope: 'public_profile,email'});
+
+      }
+      
+      facebookSignupAPI(fb_token) {
+        console.log('Welcome!  Fetching your information.... ');
+        var itemEle = this;
+        FB.api('/me?fields=id,name,picture.width(200).height(200),first_name,last_name,gender,email', function(response) { //
+          console.log('Successful login for: ' +response.name);
+          itemEle.signup(response, fb_token);                   
+        });
+      }
+
+      signup(response, fb_token){
+        console.log('signup :'+response)
+        if(response != undefined){
+          this.$.signup_iron_ajax.url = this.$.config.musiclife_api_signup;
+          var body = "fb_name="+response.name +
+                      "&fb_token="+fb_token+
+                      "&force="+true+
+                      "&fb_id="+ response.id +
+                      "&firstname="+ response.first_name+
+                      "&lastname="+ response.last_name+
+                      "&email="+ response.email+
+                      "&gender="+response.gender+
+                      "&fb_image="+ response.picture.data.url;
+          this.$.signup_iron_ajax.body = body;
+        }
+      }
+
+      handleSignupResponse(e){
+         console.log(e.detail.response);
+         var resp = e.detail.response;
+           this.authData = resp;
+      }
+    }
+
+    window.customElements.define(MusicSignup.is, MusicSignup);
+
+    function facebookInit() {
+        window.fbAsyncInit = function() {
+            FB.init({
+            appId      : '333833767043393',
+            cookie     : true,
+            xfbml      : true,
+            version    : 'v2.10'
+            });
+            FB.AppEvents.logPageView();
+        };
+
+        (function(d, s, id){
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {return;}
+            js = d.createElement(s); js.id = id;
+            js.src = "//connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));     
+    }
+
+  
+    facebookInit();
+  </script>
+</dom-module>

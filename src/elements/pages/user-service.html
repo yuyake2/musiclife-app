@@ -1,0 +1,72 @@
+
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../../bower_components/iron-localstorage/iron-localstorage.html">
+<link rel="import" href="../../shared-styles.html">
+
+<link rel="import" href="../../musiclife-config.html">
+
+
+<dom-module id="user-service">
+
+    <template>
+        <iron-localstorage name="my-app-storage" value="{{authData}}" 
+            on-iron-localstorage-load-empty="initializeDefaultAuthenticateData"></iron-localstorage>
+    </template>
+
+</dom-module>
+
+<script>
+class UserService extends Polymer.Element {
+    static get is() { return 'user-service' }
+    static get properties() {
+        return {
+            authData: {
+                type: Object,
+                notify: true,
+            },
+            routeData: {
+                type: Object
+            }
+        }
+    }
+
+    static get observers() {
+        return [
+            //'authDataChanged(authData)'
+        ]
+    }
+
+   
+    authDataChanged(authData){
+        console.log('user Service authDataChanged')
+        if(authData != undefined){
+            this.set('authData.firstname', authData.firstname)
+            this.set('authData.lastname', authData.lastname)
+            this.set('authData.email', authData.email)
+            this.set('authData.fb_id', authData.fb_image)
+            this.set('authData.fb_token', authData.fb_token)
+            this.set('authData.fb_image', authData.fb_image)
+        }
+        
+        return authData
+    }
+    setAsLogout(){
+        return this.authData = {};
+    }
+    initializeDefaultAuthenticateData() {
+        this.authData = {
+            firstname: "",
+            lastname: "",
+            email: "",
+            fb_id: "",
+            fb_token: "",
+            fb_image: ""
+        };
+    }
+
+    makeModifications() {
+      console.log('makeModifications')
+    }
+}
+ window.customElements.define(UserService.is, UserService);    
+</script>

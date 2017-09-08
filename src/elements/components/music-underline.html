@@ -1,0 +1,25 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../shared-styles.html">
+
+<template>
+    <style include="shared-styles">
+      :host {
+          
+      }
+      .border-underline{
+          border-bottom: 1px solid var(--k_color-3);
+      }
+    </style>
+
+    <hr class="border-underline">
+
+  </template>
+
+  <script>
+    class MusicUnderline extends Polymer.Element {
+      static get is() { return 'music-underline'; }
+    }
+
+    window.customElements.define(MusicUnderline.is, MusicUnderline);
+  </script>
+</dom-module>

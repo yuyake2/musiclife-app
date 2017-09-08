@@ -1,0 +1,342 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+
+<link rel="import" href="my-icons.html">
+<link rel="import" href="elements/components/music-sectitle.html">
+<link rel="import" href="elements/pages/music-signup.html">
+<link rel="import" href="elements/pages/user-service.html">
+<link rel="import" href="musiclife-config.html">
+
+<dom-module id="musiclife-app">
+  <template>
+    <style>
+      :host {
+        --app-primary-color: #4285f4;
+        --app-secondary-color: black;
+
+        --secondary-text-color: #369fca;
+        --paper-input-container-focus-color: #369fca;
+
+        /* Color */
+        --color-primary: #58b9da;
+        --color-secondary: #3b9fca;
+
+        --color-error: #ce2a3e;
+        --color-error-second: #dd2c00;
+        --color-success: #029a3f;
+        --color-warning: #efa900;
+
+        --color-white: white;
+        --k_color-1: #333;
+        --k_color-2: #666;
+        --k_color-3: #999;
+        --k_color-4: #CCC;
+        --k_color-5: #EEE;
+        --k_color-6: #F5F5F5;
+
+        /* Font size */
+        --font-xs: 10px;
+        --font-sm: 12px;
+        --font-md: 14px;
+        --font-lg: 24px;
+        --font-xl: 30px;
+
+
+        display: block;
+      }
+
+      app-drawer-layout:not([narrow]) [drawer-toggle] {
+        display: none;
+      }
+
+       .avatar-container {
+        position: relative;
+        border: 2px solid #00AA8D;
+        border-radius: 50%;
+        height: 90px;
+        padding: 2px;
+        width: 90px;
+        margin: 0 auto;
+      }
+      .avatar-container .image {
+        background-color: var(--k_color-3);
+        background-size: contain;
+        border-radius: 50%;
+        height: 100%;
+        width: 100%;
+      }
+
+      .contact-info {
+        margin: 0 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--k_color-4);
+        text-align: center;
+      }
+      .contact-info .name {
+        font-weight: bold;
+        font-size: var(--font-sm);
+      }
+      .contact-info .email {
+        color: var(--k_color-3);
+        font-size: var(--font-sm);
+      }
+      app-toolbar.box-profile{
+          display: var(--layout-verical-display);
+      }
+
+      app-header {
+        color: #fff;
+        background-color: var(--app-primary-color);
+      }
+
+      app-header paper-icon-button {
+        --paper-icon-button-ink-color: white;
+      }
+
+      .drawer-list {
+        margin: 0 20px;
+      }
+
+      .drawer-list a {
+        display: block;
+        padding: 0 16px;
+        text-decoration: none;
+        color: var(--app-secondary-color);
+        line-height: 40px;
+        font-size: var(--font-md);
+        text-transform: uppercase;
+        text-align: center;
+      }
+
+      .drawer-list a.iron-selected {
+        color: black;
+        font-weight: bold;
+      }
+
+      paper-dialog {
+        padding: 0 30px;
+        border-radius: 5px;
+      }
+      .sectitle{
+          font-size: var(--font-lg);
+            box-sizing: border-box;
+            width: 100%;
+            display: block;
+            color: var(--k_color-1);
+            border-bottom: 3px solid var(--k_color-5);
+            margin-bottom: 15px;
+            padding-bottom: 5px;
+            font-weight: bold;
+            line-height: 1.1;
+            padding: 5px;
+            text-transform: uppercase;
+            text-align: center
+      }
+      
+    </style>
+
+    <app-location route="{{route}}" url-space-regex="^[[rootPath]]"></app-location>
+    <app-route
+        route="{{route}}"
+        pattern="[[rootPath]]:page"
+        data="{{routeData}}"
+        tail="{{subroute}}"></app-route>
+    <app-route
+        route="{{route}}"
+        pattern="[[rootPath]]:page/:element_id/"
+        data="{{routeData}}"
+        tail="{{subroute}}"></app-route>
+
+    <musiclife-config id="config"></musiclife-config>
+    <user-service id="userService" auth-data="{{authData}}" route-data="[[ routeData ]]"></user-service>
+
+    <app-drawer-layout fullbleed narrow="{{narrow}}">
+      <!-- Drawer content -->
+      <app-drawer id="drawer" slot="drawer" swipe-open="[[narrow]]">
+        <app-toolbar class="box-profile">
+          <div class="avatar-container" hidden$="{{hideProfileBox.profile_box}}">
+              <div class="image"><img class="image" src="{{authData.fb_image}}"></div>
+          </div>
+          <div class="contact-info" hidden$="{{hideProfileBox.profile_box}}">
+              <div class="name">{{authData.firstname}} {{authData.lastname}}</div>
+              <div class="email">{{authData.email}}</div>
+          </div> 
+        </app-toolbar>
+
+        <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
+          <a name="music-main" href="[[rootPath]]music-main">home</a>
+          <a name="music-notification" href="[[rootPath]]music-notification">notification</a>
+          <a name="music-signup" on-tap="openSignUpDialog" 
+             style$="{{hideProfileBox.login_box}}">signup</a>
+          <a name="music-signup" on-tap="facebookSignout" 
+             style$="{{hideProfileBox.signout_box}}">sign out</a>
+        </iron-selector>
+      </app-drawer>
+
+      <!-- Main content -->
+      <app-header-layout has-scrolling-region>
+
+        <app-header slot="header" condenses reveals effects="waterfall">
+          <app-toolbar>
+            <paper-icon-button icon="my-icons:menu" drawer-toggle></paper-icon-button>
+            <div main-title>My Musiclife</div>
+          </app-toolbar>
+        </app-header>
+
+        <iron-pages selected="[[page]]" attr-for-selected="name" fallback-selection="music-view404" role="main">
+          <music-main name="music-main"  auth-data="{{authData}}" route-data="{{routeData}}"></music-main>
+          <music-notification name="music-notification" auth-data="{{authData}}" route-data="{{routeData}}"></music-notification>
+          <music-detail name="music-detail" auth-data="{{authData}}" route-data="{{routeData}}"></music-detail>
+
+          <music-signup name="music-signup"></music-signup>
+          <music-view404 name="music-view404"></music-view404>
+        </iron-pages>
+
+      </app-header-layout>
+    </app-drawer-layout>
+
+
+    <paper-dialog id="dialogSignup" dialog>
+      <h2 class="sectitle">Sign up</h2>
+      <music-signup  auth-data="{{authData}}" route-data="{{routeData}}"></music-signup>
+    </paper-dialog>
+
+    <paper-dialog id="modal" modal>
+      <h2 class="sectitle">Warning !</h2>
+      <p>{{authData.error_msg}}</p>
+      <div class="buttons">
+        <paper-button dialog-confirm autofocus>Tap me to close</paper-button>
+      </div>
+    </paper-dialog>
+    
+  </template>
+
+  <script>
+    class MusiclifeApp extends Polymer.Element {
+      static get is() { return 'musiclife-app'; }
+
+      static get properties() {
+        return {
+          page: {
+            type: String,
+            reflectToAttribute: true,
+            observer: '_pageChanged',
+          },
+          routeData: {
+            type: Object,
+            notify: true
+          },
+          subroute: String,
+          rootPath: String,
+          
+          hideProfileBox: {
+              type: Object,
+              value: { "login_box": "visibility:visible" , "profile_box": true,  "signout_box": "visibility:hidden"}
+          },
+
+          authData: {
+              type: Object,
+              reflectToAttribute: true
+          }
+
+        };
+      }
+
+      static get observers() {
+        return [
+          '_routePageChanged(routeData.page)',
+          '_authDataChange(authData)',
+        ];
+      }
+
+      _routePageChanged(page) {
+        // If no page was found in the route data, page will be an empty string.
+        // Deault to 'view1' in that case.
+        this.page = page || 'music-main';
+
+        // Close a non-persistent drawer when the page & route are changed.
+        if (!this.$.drawer.persistent) {
+          this.$.drawer.close();
+        }
+      }
+
+      _authDataChange(authData) {
+        this.$.dialogSignup.close();
+         
+         if(authData != undefined && authData.error_code == 0){
+            this.hideProfileBox = { "login_box": "visibility:hidden" , "profile_box": false,  "signout_box": "visibility:visible"} ;
+         }else{
+           this.hideProfileBox = { "login_box": "visibility:visible" , "profile_box": true,  "signout_box": "visibility:hidden"} ;
+          //  this.$.modal.open();
+         }
+      }
+      
+      isEmptyObject(obj){
+        return Object.keys(obj).length === 0;
+      }
+
+      /*facebookSignout(){
+          var facebookLogoutItem = this;
+          var token = facebookLogoutItem.authData.fb_token
+          FB.logout(function(response) {
+            console.log(response)
+            // user is now logged out
+            if(response.status == "unknown"){
+                facebookLogoutItem.authData = {};
+            }
+          });
+      }*/
+
+      facebookSignout(){
+        console.log(this);
+        var test = this;
+        test.$.userService.setAsLogout();
+      }
+
+      openSignUpDialog() {
+         this.$.dialogSignup.open();
+      }
+
+      _pageChanged(page) {
+        var resolvedPageUrl = this.resolveUrl(this._page_name_to_element_path(page));
+        Polymer.importHref(
+            resolvedPageUrl,
+            null,
+            this._showPage404.bind(this),
+            true);
+      }
+      _page_name_to_element_path (page) {
+         var page_element_path = '/src/elements/pages/' + page + '.html';
+         return page_element_path;
+      }
+
+      _showPage404() {
+        this.page = 'music-view404';
+      }
+    }
+
+    window.customElements.define(MusiclifeApp.is, MusiclifeApp);
+  </script>
+</dom-module>

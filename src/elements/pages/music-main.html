@@ -1,0 +1,170 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../shared-styles.html">
+
+<link rel="import" href="../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../../bower_components/iron-icons/av-icons.html">
+<link rel="import" href="../../../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html">
+
+<link rel="import" href="../../musiclife-config.html">
+<dom-module id="music-main">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+
+        padding: 10px;
+      }
+    </style>
+    <style>
+      .content{
+        display: block;
+        position: relative;
+        max-width: 1000px;
+        margin: 5px auto;
+      }
+      .card-contianer{
+        display: inline-block;
+        /*width: 33.33%;*/
+        width: 19%; 
+        color: black;
+        text-decoration: none;
+      }
+      paper-card {
+        display: block;
+        margin: 5px;
+        --paper-card-header-image: {
+          height: 200px;
+        }
+        border-radius:2px;
+      }
+      .white{
+        background-color: var(--color-white);
+      }
+      .card-header{
+        position: relative;
+        border-top-left-radius: inherit;
+        border-top-right-radius: inherit;
+        overflow: hidden;
+      }
+      .card-header iron-image{
+        width: 100%;
+        pointer-events: none;
+        height: 150px; /*200px*/
+        background-color: #ccc;
+      }
+      .card-content{
+        padding: 5px 16px;
+        position: relative;
+      }
+      .card-actions{
+        padding: 0px 16px;
+        position: relative;
+      }
+      paper-card .music-name {
+        /*margin: 4px;*/
+        font-weight: normal;
+        font-size: 16px;
+      }
+      paper-card .music-artist {
+        /*margin: 4px;*/
+        color: #999;
+        font-size: var(--font-sm);
+      }
+
+      @media (max-width: 960px) {
+        .content {
+          max-width: 800px;
+        }
+        .card-contianer {
+          width: 50%;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .content {
+          max-width: 400px;
+        }
+        .card-contianer {
+          width: 100%;
+        }
+      }
+    </style>
+    
+    <musiclife-config id="config"></musiclife-config>
+    <iron-ajax id="get_music_list_iron_ajax" auto handle-as="json"
+               on-response="handleMusicResponse"
+               with-credentials="true" debounce-duration="300"></iron-ajax>
+    
+    <div class="content">
+      <template is="dom-repeat" items="[[musics]]" class="">
+        <div class="card-contianer" id="[[item.music_id]]">
+          <paper-card class="music-list white">
+              <div class="card-header">
+                <iron-image src="[[item.image.image_url]]"></iron-image>
+              </div>
+              <div class="card-content">
+                <div class="music-name">[[item.music_name]]</div>
+                <div class="music-artist">[[item.artist_name]]</div>
+              </div>
+              <div class="card-actions">
+                <paper-icon-button icon="icons:favorite-border" drawer-toggle></paper-icon-button>
+                <paper-icon-button icon="av:play-circle-outline" url="[[item.music_url]]"></paper-icon-button>
+              </div>
+          </paper-card>
+
+          <paper-audio-player src="[[item.music_url]]"></paper-audio-player>
+        </div>
+      </template>
+      
+    </div>
+  </template>
+
+  <script>
+    class MusicMain extends Polymer.Element {
+      static get is() { return 'music-main'; }
+      static get properties() {
+        return {
+          authData: { type: Object },
+          musics: { type: Object },
+          routeData:{
+            type: Object
+          }
+         }
+      }
+
+      static get observers() {
+        return [
+          '_routeDataChanged(routeData)',
+        ];
+      }
+
+      _routeDataChanged(routeData){
+          console.log('main _routeDataChanged')
+          console.log(this.authData);
+      }
+      connectedCallback(){
+        super.connectedCallback();
+        this.$.get_music_list_iron_ajax.url = this.$.config.musiclife_api_music_list;
+      }
+
+      handleMusicResponse(e){
+          var resp = e.detail.response;
+          this.musics = resp;
+      }
+    }
+
+    window.customElements.define(MusicMain.is, MusicMain);
+  </script>
+</dom-module>
