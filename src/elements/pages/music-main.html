@@ -144,16 +144,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
          }
       }
 
-      static get observers() {
+      /*static get observers() {
         return [
           '_routeDataChanged(routeData)',
         ];
-      }
+      }*/
 
-      _routeDataChanged(routeData){
+      /*_routeDataChanged(routeData){
           console.log('main _routeDataChanged')
-          console.log(this.authData);
-      }
+      }*/
       connectedCallback(){
         super.connectedCallback();
         this.$.get_music_list_iron_ajax.url = this.$.config.musiclife_api_music_list;

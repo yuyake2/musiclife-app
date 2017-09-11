@@ -27,6 +27,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="elements/components/music-sectitle.html">
 <link rel="import" href="elements/pages/music-signup.html">
 <link rel="import" href="elements/pages/user-service.html">
+<link rel="import" href="musiclife-app-route.html">
 <link rel="import" href="musiclife-config.html">
 
 <dom-module id="musiclife-app">
@@ -157,17 +158,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       
     </style>
 
-    <app-location route="{{route}}" url-space-regex="^[[rootPath]]"></app-location>
-    <app-route
-        route="{{route}}"
-        pattern="[[rootPath]]:page"
-        data="{{routeData}}"
-        tail="{{subroute}}"></app-route>
-    <app-route
-        route="{{route}}"
-        pattern="[[rootPath]]:page/:element_id/"
-        data="{{routeData}}"
-        tail="{{subroute}}"></app-route>
+    <musiclife-app-route route-data="{{routeData}}" auth-data="{{authData}}"></musiclife-app-route>
 
     <musiclife-config id="config"></musiclife-config>
     <user-service id="userService" auth-data="{{authData}}" route-data="[[ routeData ]]"></user-service>
@@ -297,22 +288,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         return Object.keys(obj).length === 0;
       }
 
-      /*facebookSignout(){
-          var facebookLogoutItem = this;
-          var token = facebookLogoutItem.authData.fb_token
-          FB.logout(function(response) {
-            console.log(response)
-            // user is now logged out
-            if(response.status == "unknown"){
-                facebookLogoutItem.authData = {};
-            }
-          });
-      }*/
-
       facebookSignout(){
-        console.log(this);
-        var test = this;
-        test.$.userService.setAsLogout();
+        var fbSignoutEle = this;
+        fbSignoutEle.$.userService.setAsLogout();
       }
 
       openSignUpDialog() {

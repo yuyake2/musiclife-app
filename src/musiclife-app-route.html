@@ -1,0 +1,58 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="musiclife-config.html">
+
+
+<dom-module id="musiclife-app-route">
+
+<template>
+    <app-location route="{{route}}" url-space-regex="^[[rootPath]]"></app-location>
+    <app-route  route="{{route}}"
+                pattern="[[rootPath]]:page"
+                data="{{routeDataType1}}"
+                tail="{{subrouteType1}}"></app-route>
+    <app-route
+                route="{{ route }}"
+                pattern="[[rootPath]]:page/:element_id"
+                data="{{ routeDataType2 }}"
+                tail="{{ subrouteType2 }}"></app-route>
+
+</template>
+
+<script>
+    class MusiclifeAppRoute extends Polymer.Element {
+        static get is() { return 'musiclife-app-route'; }
+        static get properties() {
+            return {
+                routeData: {
+                    type: Object,
+                    notify: true
+                }
+            }
+        }
+
+        static get observers() {
+            return [
+                '_routeDataChanged(routeDataType1)',
+                '_routeDataChanged(routeDataType2)',
+            ];
+        }
+
+        _routeDataChanged (routeData) {
+            if(routeData == undefined){
+                return;
+            }
+            var page = routeData.page;
+            console.log("_routeDataChanged");
+            console.log(routeData);
+            this.routeData = routeData;
+            this.page = page || 'music-main';
+            this.element_id = routeData.element_id;
+        }
+    }
+
+    window.customElements.define(MusiclifeAppRoute.is, MusiclifeAppRoute);
+</script>
+</dom-module>
